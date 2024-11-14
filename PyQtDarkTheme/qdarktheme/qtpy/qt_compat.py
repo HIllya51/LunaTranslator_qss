@@ -1,5 +1,4 @@
 """Module for Qt compat."""
-from __future__ import annotations
 
 import os
 import sys
@@ -26,19 +25,19 @@ _QT_API_PYSIDE2 = "PySide2"
 _API_LIST = [_QT_API_PYSIDE6, _QT_API_PYQT6, _QT_API_PYQT5, _QT_API_PYSIDE2]
 
 
-def _get_loaded_api() -> str | None:
+def _get_loaded_api():
     """Return which API is loaded.
 
     If this returns anything besides None,
     importing any other Qt-binding is unsafe.
     """
     for api in _API_LIST:
-        if sys.modules.get(f"{api}.QtCore"):
+        if sys.modules.get("{}.QtCore".format(api)):
             return api
     return None
 
 
-def _get_environ_api() -> str | None:
+def _get_environ_api():
     """Return which API is specified in environ."""
     _qt_api_env = os.environ.get("QT_API")
     if _qt_api_env is not None:
@@ -56,12 +55,12 @@ def _get_environ_api() -> str | None:
     except KeyError:
         raise KeyError(
             "The environment variable QT_API has the unrecognized value "
-            f"{_qt_api_env!r}. "
-            f"Valid values are {[k for k in _env_to_module if k is not None]}"
+            "{!r}. "
+            "Valid values are {}".format(_qt_api_env, [k for k in _env_to_module if k is not None])
         ) from None
 
 
-def _get_installed_api() -> str | None:
+def _get_installed_api():
     """Return which API is installed."""
     # Fix [AttributeError: module 'importlib' has no attribute 'util']
     # See https://stackoverflow.com/a/39661116/13452582

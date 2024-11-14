@@ -1,5 +1,4 @@
 """Utility methods for qdarktheme."""
-from __future__ import annotations
 
 import inspect
 import logging
@@ -13,7 +12,7 @@ import qdarktheme
 _OPERATORS = {"==": ope.eq, "!=": ope.ne, ">=": ope.ge, "<=": ope.le, ">": ope.gt, "<": ope.lt}
 
 
-def multi_replace(target: str, replacements: dict[str, str]) -> str:
+def multi_replace(target, replacements) -> str:
     """Given a string and a replacement map, it returns the replaced string.
 
     See https://gist.github.com/bgusach/a967e0587d6e01e889fd1d776c5f3729.
@@ -34,7 +33,7 @@ def multi_replace(target: str, replacements: dict[str, str]) -> str:
     return pattern.sub(lambda match: replacements[match.group()], target)
 
 
-def get_logger(logger_name: str) -> logging.Logger:
+def get_logger(logger_name) -> logging.Logger:
     """Return the logger with the name specified by logger_name arg.
 
     Args:
@@ -52,9 +51,13 @@ def get_logger(logger_name: str) -> logging.Logger:
     return logger
 
 
-def get_cash_root_path(version: str) -> Path:
+def get_cash_root_path(version) -> Path:
     """Return the cash root dir path."""
-    return Path.home() / ".cache" / "qdarktheme" / f"v{version}"
+    try:
+        _ = Path.home()
+    except:
+        _ = Path.cwd()
+    return _ / ".cache" / "qdarktheme" / "v{}".format(version)
 
 
 def get_qdarktheme_root_path() -> Path:
@@ -66,13 +69,13 @@ def get_qdarktheme_root_path() -> Path:
     return Path(inspect.getfile(qdarktheme)).parent
 
 
-def _compare_v(v1: str, operator: str, v2: str) -> bool:
+def _compare_v(v1, operator, v2) -> bool:
     """Comparing two versions."""
     v1_list, v2_list = (tuple(map(int, (v.split(".")))) for v in (v1, v2))
     return _OPERATORS[operator](v1_list, v2_list)
 
 
-def analyze_version_str(target_version: str, version_text: str) -> bool:
+def analyze_version_str(target_version, version_text) -> bool:
     """Analyze text comparing versions."""
     for operator in _OPERATORS:
         if operator not in version_text:

@@ -1,5 +1,4 @@
 """A module containing multiple filters used by template engine."""
-from __future__ import annotations
 
 import platform
 
@@ -20,7 +19,7 @@ else:
 
 if QT_API is None:
     _QT_API = "PySide6"
-    _logger.warning(f"Failed to detect Qt binding. Load Qt API as '{_QT_API}'.")
+    _logger.warning("Failed to detect Qt binding. Load Qt API as '{}'.".format(_QT_API))
 else:
     _QT_API = QT_API
 
@@ -31,7 +30,7 @@ if None in (qt_version, QT_API):
     )
 
 
-def _transform(color: Color, color_state: dict[str, float]) -> Color:
+def _transform(color, color_state) -> Color:
     if color_state.get("transparent"):
         color = color.transparent(color_state["transparent"])
     if color_state.get("darken"):
@@ -41,12 +40,12 @@ def _transform(color: Color, color_state: dict[str, float]) -> Color:
     return color
 
 
-def color(color_info: str | dict[str, str | dict], state: str | None = None) -> Color:
+def color(color_info, state = None) -> Color:
     """Filter for template engine. This filter convert color info data to color object."""
     if isinstance(color_info, str):
         return Color.from_hex(color_info)
 
-    base_color_format: str = color_info["base"]  # type: ignore
+    base_color_format = color_info["base"]  # type: ignore
     color = Color.from_hex(base_color_format)
 
     if state is None:
@@ -62,22 +61,28 @@ def palette_format(color: Color) -> str:
     QPalette parser for hex only support ARGB hex format. color.Color class use RGB hex format.
     So we need to convert Color object to ARGB hex format.
     """
-    return f"#{color.to_hex_argb()}"
+    return "#{}".format(color.to_hex_argb())
 
 
-def url(color: Color, id: str, rotate: int = 0) -> str:
+def url(color: Color, id, rotate: int = 0) -> str:
     """Filter for template engine. This filter create url for svg and output svg file."""
-    svg_path = get_cash_root_path(__version__) / f"{id}_{color._to_hex()}_{rotate}.svg"
-    url = f"url({svg_path.as_posix()})"
+    svg_path = get_cash_root_path(__version__) / "{}_{}_{}.svg".format(id, color._to_hex(), rotate)
+    url = "url({})".format(svg_path.as_posix())
     if svg_path.exists():
         return url
     svg = Svg(id).colored(color).rotate(rotate)
-    svg_path.write_text(str(svg))
+    try:
+        svg_path.write_text(str(svg))
+    except:
+        import os
+        os.makedirs(os.path.dirname(str(svg_path)), exist_ok=True)
+        with open(str(svg_path), 'w') as ff:
+            ff.write(str(svg))
     return url
 
 
 def env(
-    text, value: str, version: str | None = None, qt: str | None = None, os: str | None = None
+    text, value, version = None, qt = None, os = None
 ) -> str:
     """Filter for template engine. This filter output empty string when unexpected environment."""
     if version and not analyze_version_str(_QT_VERSION, version):
@@ -89,6 +94,6 @@ def env(
     return value.replace("${}", str(text))
 
 
-def corner(corner_shape: str, size: str) -> str:
+def corner(corner_shape, size) -> str:
     """Filter for template engine. This filter manage corner shape."""
     return size if corner_shape == "rounded" else "0"

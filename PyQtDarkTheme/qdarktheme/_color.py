@@ -1,11 +1,10 @@
 """Module for color code."""
-from __future__ import annotations
 
 import colorsys
 import math
 
 
-def _round_float(number: float, decimal_points: int = 3) -> float:
+def _round_float(number, decimal_points = 3) -> float:
     decimal = 10**decimal_points
     return round(number * decimal) / decimal
 
@@ -13,7 +12,7 @@ def _round_float(number: float, decimal_points: int = 3) -> float:
 class _RGBA:
     """Class handling RGBA color code."""
 
-    def __init__(self, r: int, g: int, b: int, a: float = 1) -> None:
+    def __init__(self, r, g, b, a = 1) -> None:
         """Initialize rgba value.
 
         Args:
@@ -32,13 +31,13 @@ class _RGBA:
 
         e.g. rgba(100, 100, 100, 0.5).
         """
-        return f"rgba({self.r}, {self.g}, {self.b}, {self.a:.3f})"
+        return "rgba({}, {}, {}, {:.3f})".format(self.r, self.g, self.b, self.a)
 
-    def __getitem__(self, item: int) -> int | float:
+    def __getitem__(self, item):
         """Unpack to (r, g, b, a)."""
         return [self.r, self.g, self.b, self.a][item]
 
-    def __eq__(self, other: _RGBA) -> bool:
+    def __eq__(self, other) -> bool:
         """Returns true if `r`, `g`, `b` and `a` are all the same."""
         return [self.r, self.g, self.b, self.a] == [other.r, other.g, other.b, other.a]
 
@@ -60,13 +59,13 @@ class _RGBA:
 
 
 class _HSLA:
-    def __init__(self, hue: int, sat: float, lum: float, alpha: float = 1) -> None:
+    def __init__(self, hue, sat, lum, alpha = 1) -> None:
         self._h = max(min(360, hue), 0) | 0
         self._s = _round_float(max(min(1, sat), 0))
         self._l = _round_float(max(min(1, lum), 0))
         self._a = _round_float(max(min(1, alpha), 0))
 
-    def __eq__(self, other: _HSLA) -> bool:
+    def __eq__(self, other) -> bool:
         """Returns true if `hue`, `sat`, `lum` and `alpha` are all the same."""
         return [self.hue, self.sat, self.lum, self.alpha] == [
             other.hue,
@@ -92,7 +91,7 @@ class _HSLA:
         return self._a
 
     @staticmethod
-    def from_rgba(rgba: _RGBA) -> _HSLA:
+    def from_rgba(rgba):
         hls = colorsys.rgb_to_hls(rgba.r / 255, rgba.g / 255, rgba.b / 255)
         return _HSLA(int(hls[0] * 360), hls[2], hls[1], rgba.a)
 
@@ -104,7 +103,7 @@ class _HSLA:
 class Color:
     """Class handling color code(RGBA and HSLA)."""
 
-    def __init__(self, color_code: _RGBA | _HSLA) -> None:
+    def __init__(self, color_code) -> None:
         """Initialize color code."""
         self._hsla, self._hsva = None, None
         if isinstance(color_code, _RGBA):
@@ -131,7 +130,7 @@ class Color:
         return str(self.rgba)
 
     @staticmethod
-    def _check_hex_format(hex_format: str) -> None:
+    def _check_hex_format(hex_format) -> None:
         """Check if string is hex format."""
         try:
             hex = hex_format.lstrip("#")
@@ -140,20 +139,20 @@ class Color:
             int(hex, 16)
         except ValueError:
             raise ValueError(
-                f'invalid hex color format: "{hex_format}". '
+                'invalid hex color format: "{}". '
                 "Only support following hexadecimal notations: #RGB, #RGBA, #RRGGBB and #RRGGBBAA. "
                 "R (red), G (green), B (blue), and A (alpha) are hexadecimal characters "
-                "(0-9, a-f or A-F)."
+                "(0-9, a-f or A-F).".format(hex_format)
             ) from None
 
     @staticmethod
-    def from_rgba(r: int, g: int, b: int, a: int) -> Color:
+    def from_rgba(r, g, b, a):
         """Convert rgba to Color object."""
         rgba = _RGBA(r, g, b, a / 255)
         return Color(rgba)
 
     @staticmethod
-    def from_hex(hex: str) -> Color:
+    def from_hex(hex):
         """Convert hex string to Color object.
 
         Args:
@@ -190,9 +189,9 @@ class Color:
             str: Hex converted from Color object.
         """
         r, g, b, a = self.rgba.r, self.rgba.g, self.rgba.b, self.rgba.a
-        hex_color = f"{math.floor(r):02x}{math.floor(g):02x}{math.floor(b):02x}"
+        hex_color = "{:02x}{:02x}{:02x}".format(math.floor(r), math.floor(g), math.floor(b))
         if a != 1:
-            hex_color += f"{math.floor(a * 255):02x}"
+            hex_color += "{:02x}".format(math.floor(a * 255))
         return hex_color
 
     def to_hex_argb(self) -> str:
@@ -205,8 +204,8 @@ class Color:
             str: Hex converted from Color object.
         """
         r, g, b, a = self.rgba.r, self.rgba.g, self.rgba.b, self.rgba.a
-        hex_color = "" if a == 1 else f"{math.floor(a * 255):02x}"
-        hex_color += f"{math.floor(r):02x}{math.floor(g):02x}{math.floor(b):02x}"
+        hex_color = "" if a == 1 else "{:02x}".format(math.floor(a * 255))
+        hex_color += "{:02x}{:02x}{:02x}".format(math.floor(r), math.floor(g), math.floor(b))
         return hex_color
 
     def to_svg_tiny_color_format(self) -> str:
@@ -220,21 +219,21 @@ class Color:
         """
         r, g, b, a = self.rgba
         if a == 1:
-            return f'fill="#{self._to_hex()}"'
-        return f'fill="rgb({r},{g},{b})" fill-opacity="{a}"'
+            return 'fill="#{}"'.format(self._to_hex())
+        return 'fill="rgb({},{},{})" fill-opacity="{}"'.format(r, g, b, a)
 
-    def lighten(self, factor: float) -> Color:
+    def lighten(self, factor):
         """Lighten color."""
         return Color(
             _HSLA(self.hsla.hue, self.hsla.sat, self.hsla.lum + self.hsla.lum * factor, self.hsla.alpha)
         )
 
-    def darken(self, factor: float) -> Color:
+    def darken(self, factor):
         """Darken color."""
         return Color(
             _HSLA(self.hsla.hue, self.hsla.sat, self.hsla.lum - self.hsla.lum * factor, self.hsla.alpha)
         )
 
-    def transparent(self, factor: float) -> Color:
+    def transparent(self, factor):
         """Make color transparent."""
         return Color(_RGBA(self.rgba.r, self.rgba.g, self.rgba.b, self.rgba.a * factor))

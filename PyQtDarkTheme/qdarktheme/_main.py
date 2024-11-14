@@ -1,4 +1,4 @@
-from __future__ import annotations
+
 
 import atexit
 import os
@@ -12,7 +12,7 @@ _listener = None
 _proxy_style = None
 
 
-def _apply_style(app, additional_qss: str | None, **kargs) -> None:
+def _apply_style(app, additional_qss, **kargs) -> None:
     from qdarktheme._proxy_style import QDarkThemeStyle
 
     stylesheet = load_stylesheet(**kargs)
@@ -84,12 +84,11 @@ def stop_sync() -> None:
 
 
 def setup_theme(
-    theme: str = "dark",
-    corner_shape: str = "rounded",
-    custom_colors: dict[str, str | dict[str, str]] | None = None,
-    additional_qss: str | None = None,
-    *,
-    default_theme: str = "dark",
+    theme = "dark",
+    corner_shape = "rounded",
+    custom_colors = None,
+    additional_qss = None,
+    default_theme = "dark",
 ) -> None:
     """Apply the theme which looks like flat design to the Qt App completely.
 

@@ -1,5 +1,4 @@
 """Module for loading style data for Qt."""
-from __future__ import annotations
 
 import json
 import shutil
@@ -13,47 +12,47 @@ from qdarktheme._util import get_cash_root_path, get_logger
 _logger = get_logger(__name__)
 
 
-def _detect_system_theme(default_theme: str) -> str:
+def _detect_system_theme(default_theme) -> str:
     import darkdetect
 
     system_theme = darkdetect.theme()
     if system_theme is None:
-        _logger.info(f'failed to detect system theme, qdarktheme use "{default_theme}" theme.')
+        _logger.info('failed to detect system theme, qdarktheme use "{}" theme.'.format(default_theme))
         return default_theme
     return system_theme.lower()
 
 
-def _color_values(theme: str) -> dict[str, str | dict]:
+def _color_values(theme):
     try:
         return json.loads(_resources.colors.THEME_COLOR_VALUES[theme])
     except KeyError:
-        raise ValueError(f'invalid argument, not a dark, light or auto: "{theme}"') from None
+        raise ValueError('invalid argument, not a dark, light or auto: "{}"'.format(theme)) from None
 
 
-def _has_primary_color(custom_colors: dict[str, str | dict[str, str]], theme: str) -> bool:
+def _has_primary_color(custom_colors, theme) -> bool:
     if any("primary" in color for color in custom_colors):
         return True
-    custom_colors_with_theme = custom_colors.get(f"[{theme}]")
+    custom_colors_with_theme = custom_colors.get("[{}]".format(theme))
     if custom_colors_with_theme is None:
         return False
     if not isinstance(custom_colors_with_theme, dict):
         raise ValueError(
             "invalid value for argument custom_colors, not a dict type: "
-            f'"{custom_colors_with_theme}" of "[{theme}]" key.'
+            '"{}" of "[{}]" key.'.format(custom_colors_with_theme, theme)
         )
     return any("primary" in color for color in custom_colors_with_theme)
 
 
 def _apply_os_accent_color(
-    custom_colors: dict[str, str | dict[str, str]] | None, theme: str
-) -> dict[str, str | dict[str, str]] | None:
+    custom_colors, theme
+):
     accent = _os_appearance.accent()
     if accent is None:
         return custom_colors
     try:
         accent_color = _resources.colors.ACCENT_COLORS[theme].get(accent)
     except KeyError:
-        raise ValueError(f'invalid argument, not a dark, light or auto: "{theme}"') from None
+        raise ValueError('invalid argument, not a dark, light or auto: "{}"'.format(theme)) from None
     if accent_color is None:
         return custom_colors
 
@@ -65,21 +64,21 @@ def _apply_os_accent_color(
     return custom_colors
 
 
-def _mix_theme_colors(custom_colors: dict[str, str | dict[str, str]], theme: str) -> dict[str, str]:
+def _mix_theme_colors(custom_colors, theme):
     colors = {id: color for id, color in custom_colors.items() if isinstance(color, str)}
-    custom_colors_with_theme = custom_colors.get(f"[{theme}]")
+    custom_colors_with_theme = custom_colors.get("[{}]".format(theme))
     if isinstance(custom_colors_with_theme, dict):
         colors.update(custom_colors_with_theme)
     elif isinstance(custom_colors_with_theme, str):
         raise ValueError(
             "invalid value for argument custom_colors, not a dict type: "
-            f'"{custom_colors_with_theme}" of "[{theme}]" key.'
+            '"{}" of "[{}]" key.'.format(custom_colors_with_theme, theme)
         )
     return colors
 
 
 def _marge_colors(
-    color_values: dict[str, str | dict], custom_colors: dict[str, str | dict[str, str]], theme: str
+    color_values, custom_colors, theme
 ):
     for color_id, color in _mix_theme_colors(custom_colors, theme).items():
         try:
@@ -95,15 +94,14 @@ def _marge_colors(
                 color_value[child_key]  # Check if child_key exists.
                 color_value[child_key] = color
         except KeyError:
-            raise KeyError(f'invalid color id for argument custom_colors: "{color_id}".') from None
+            raise KeyError('invalid color id for argument custom_colors: "{}".'.format(color_id)) from None
 
 
 def load_stylesheet(
-    theme: str = "dark",
-    corner_shape: str = "rounded",
-    custom_colors: dict[str, str | dict[str, str]] | None = None,
-    *,
-    default_theme: str = "dark",
+    theme = "dark",
+    corner_shape = "rounded",
+    custom_colors = None,
+    default_theme = "dark",
 ) -> str:
     """Load the style sheet which looks like flat design. There are `dark` and `light` theme.
 
@@ -177,12 +175,14 @@ def load_stylesheet(
         custom_colors = _apply_os_accent_color(custom_colors, theme)
     color_values = _color_values(theme)
     if corner_shape not in ("rounded", "sharp"):
-        raise ValueError(f'invalid argument, not a rounded or sharp: "{corner_shape}"')
+        raise ValueError('invalid argument, not a rounded or sharp: "{}"'.format(corner_shape))
 
     if custom_colors is not None:
         _marge_colors(color_values, custom_colors, theme)
-
-    get_cash_root_path(__version__).mkdir(parents=True, exist_ok=True)
+    try:
+        get_cash_root_path(__version__).mkdir(parents=True, exist_ok=True)
+    except:
+        pass
 
     stylesheet = _resources.stylesheets.TEMPLATE_STYLESHEET
     try:
@@ -212,16 +212,15 @@ def clear_cache() -> None:
     try:
         cache_path = get_cash_root_path(__version__)
         shutil.rmtree(cache_path)
-        _logger.info(f"The caches({cache_path}) has been deleted")
+        _logger.info("The caches({}) has been deleted".format(cache_path))
     except FileNotFoundError:
         _logger.info("There is no caches")
 
 
 def load_palette(
-    theme: str = "dark",
-    custom_colors: dict[str, str | dict[str, str]] | None = None,
-    *,
-    default_theme: str = "dark",
+    theme = "dark",
+    custom_colors = None,
+    default_theme = "dark",
     for_stylesheet: bool = False,
 ):
     """Load the QPalette for the dark or light theme.
@@ -293,7 +292,7 @@ def load_palette(
     return _resources.palette.q_palette(mk_template, color_values, for_stylesheet)
 
 
-def get_themes() -> tuple[str, ...]:
+def get_themes():
     """Return available theme names.
 
     Returns:

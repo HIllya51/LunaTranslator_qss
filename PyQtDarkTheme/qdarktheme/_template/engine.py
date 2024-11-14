@@ -1,19 +1,17 @@
 """Module for handling template text."""
-from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass
 from itertools import chain, zip_longest
 
 from qdarktheme._util import multi_replace
 
 
-@dataclass(unsafe_hash=True, frozen=True)
 class _Placeholder:
-    match_text: str
-    value: str | int | float
-    filters: tuple[str]
+    def __init__(self, _1, _2, _3):
+        self.match_text = _1
+        self.value = _2
+        self.filters = _3
 
 
 class Template:
@@ -38,8 +36,8 @@ class Template:
                 return text
 
     @staticmethod
-    def _parse_placeholders(text: str):
-        placeholders: set[_Placeholder] = set()
+    def _parse_placeholders(text):
+        placeholders = set()
         for match in re.finditer(Template._PLACEHOLDER_RE, text):
             match_text = match.group()
             contents, *filters = match_text.strip("{}").replace(" ", "").split("|")
@@ -47,7 +45,7 @@ class Template:
             placeholders.add(_Placeholder(match_text, value, tuple(filters)))
         return placeholders
 
-    def _run_filter(self, value: str | int | float, filter_text: str):
+    def _run_filter(self, value, filter_text):
         contents = filter_text.split("(")
         if len(contents) == 1:
             return self._filters[contents[0]](value)
@@ -63,20 +61,20 @@ class Template:
             json_text = '{"' + "".join(
                 chain.from_iterable(zip_longest(words, py_strings, fillvalue=""))
             )
-        arguments: dict = json.loads(json_text)
+        arguments = json.loads(json_text)
         return self._filters[filter_name](value, **arguments)
 
-    def render(self, replacements: dict) -> str:
+    def render(self, replacements) -> str:
         """Render replacements."""
         placeholders = Template._parse_placeholders(self._target_text)
-        new_replacements: dict[str, str] = {}
+        new_replacements = {}
         for placeholder in placeholders:
             value = placeholder.value
             if type(value) is str and len(value) != 0:
                 value = replacements.get(value)
             if value is None:
                 raise AssertionError(
-                    f"There is no replacements for: {placeholder.value} in {placeholder.match_text}"
+                    "There is no replacements for: {} in {}".format(placeholder.value, placeholder.match_text)
                 )
             for filter in placeholder.filters:
                 value = self._run_filter(value, filter)

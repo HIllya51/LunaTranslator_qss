@@ -1,5 +1,4 @@
 """Module for QtWidgets."""
-from __future__ import annotations
 
 from collections.abc import Sequence
 
@@ -18,7 +17,7 @@ elif QT_API == "PySide2":
 class Application(QApplication):  # type: ignore  # noqa: F405
     """Override QApplication."""
 
-    def __init__(self, args: Sequence[str] | None = None) -> None:
+    def __init__(self, args = None) -> None:
         """Override QApplication method."""
         super().__init__(args)
 
@@ -28,7 +27,7 @@ class Application(QApplication):  # type: ignore  # noqa: F405
             return super().exec()
         return super().exec_()
 
-    def exit(self, returnCode: int = 0) -> None:  # noqa: N803
+    def exit(self, returnCode = 0) -> None:  # noqa: N803
         """Override QApplication method."""
         return super().exit(returnCode)
 

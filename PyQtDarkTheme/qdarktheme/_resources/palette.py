@@ -1,12 +1,11 @@
 """Module loading QPalette."""
-from __future__ import annotations
 
 from functools import partial
 
 from qdarktheme._template.engine import Template
 
 
-def q_palette(mk_template: partial[Template], color_map: dict[str, str | dict], for_stylesheet: bool):
+def q_palette(mk_template, color_map, for_stylesheet: bool):
     """Generate QPalette."""
     from qdarktheme.qtpy.QtGui import QColor, QPalette
 

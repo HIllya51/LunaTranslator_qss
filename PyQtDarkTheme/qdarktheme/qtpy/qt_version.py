@@ -1,9 +1,8 @@
 """Module for detecting Qt version."""
-from __future__ import annotations
 
 from qdarktheme.qtpy.qt_compat import QT_API
 
-__version__: str | None = None
+__version__ = None
 if QT_API == "PySide6":
     from PySide6.QtCore import qVersion  # type: ignore
 
