@@ -7,7 +7,6 @@ from enum import Enum
 from importlib import resources
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Optional, Union
 
 from qtvscodestyle.stylesheet.build import build_stylesheet
 from qtvscodestyle.util import multireplace
@@ -47,7 +46,7 @@ class Theme(Enum):
     DARK_HIGH_CONTRAST = {"name": "Dark High Contrast", "file_name": "hc_black.json", "type": "hc"}
 
 
-def _loads_jsonc(json_text: str) -> dict:
+def _loads_jsonc(json_text) :
     """wrapper of json.loads() to load jsonc(json with comment) text.
     Allow comment and trailing commas(inside dictionaries or lists).
     """
@@ -63,7 +62,7 @@ def _loads_jsonc(json_text: str) -> dict:
 
     # Replace invalid symbol to replace word in key or value
     # to exclude certain symbols in a string from substitution.
-    def replace_comment_symbol(match: re.Match) -> str:
+    def replace_comment_symbol(match ) :
         return multireplace(match.group(), symbol_to_replace_word)
 
     text_replaced = re.sub(r'"(.*?)"', replace_comment_symbol, json_text)
@@ -79,7 +78,7 @@ def _loads_jsonc(json_text: str) -> dict:
     return json.loads(result)
 
 
-def _merge_colors_to_default(colors: dict[str, str], type: str) -> dict[str, Optional[Color]]:
+def _merge_colors_to_default(colors, type) :
     color_registry = ColorRegistry()
     for id, color in colors.items():
         color_registry.register_color(id, color, type)
@@ -88,11 +87,11 @@ def _merge_colors_to_default(colors: dict[str, str], type: str) -> dict[str, Opt
 
 
 def _load_stylesheet(
-    theme: Union[Theme, str, Path, dict],
-    custom_colors: dict[str, str],
-    output_svg_path: Path,
-    is_designer: bool = False,
-) -> str:
+    theme,
+    custom_colors,
+    output_svg_path,
+    is_designer = False,
+) :
     if type(theme) is Theme:
         theme_file_name = theme.value["file_name"]
         json_text = resources.read_text("qtvscodestyle.vscode.theme", theme_file_name)
@@ -126,11 +125,11 @@ def _load_stylesheet(
     return build_stylesheet(colors, theme_property["type"], output_svg_path, is_designer)
 
 
-def load_stylesheet_for_designer(theme: Theme, custom_colors: dict[str, str], resource_folder_path: Path) -> str:
+def load_stylesheet_for_designer(theme: Theme, custom_colors, resource_folder_path) :
     return _load_stylesheet(theme, custom_colors, resource_folder_path, True)
 
 
-def load_stylesheet(theme: Union[Theme, str, Path, dict] = Theme.DARK_VS, custom_colors: dict[str, str] = {}) -> str:
+def load_stylesheet(theme = Theme.DARK_VS, custom_colors = {}) :
     """Load the style sheet which used by vscode."""
     global _temp_dir  # Set to global value the temporary directory so that it is not cached.
     _temp_dir = TemporaryDirectory(prefix="temp", dir=str(_RESOURCES_BASE_DIR))
@@ -138,12 +137,12 @@ def load_stylesheet(theme: Union[Theme, str, Path, dict] = Theme.DARK_VS, custom
     return _load_stylesheet(theme, custom_colors, temp_dir_path)
 
 
-def loads_stylesheet(theme_text: str, custom_colors: dict[str, str] = {}) -> str:
+def loads_stylesheet(theme_text, custom_colors = {}) :
     theme_property = _loads_jsonc(theme_text)
     return load_stylesheet(theme_property, custom_colors)
 
 
-def _beautify_printing_dict(di: dict, key_title: str, value_title: str) -> None:
+def _beautify_printing_dict(di: dict, key_title, value_title) :
     # Align with a colon
     max_len = 0
     for key in di.keys():

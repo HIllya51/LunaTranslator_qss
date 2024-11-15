@@ -16,7 +16,6 @@
 
 
 from enum import Enum, auto
-from typing import Optional, Union
 
 from qtvscodestyle.vscode.color import RGBA, Color
 
@@ -25,7 +24,6 @@ class _ColorIdentifier(str):
     pass
 
 
-_ColorValue = Union[Color, str, _ColorIdentifier, dict, None]
 
 
 class _ColorTransformType(Enum):
@@ -38,9 +36,9 @@ class _ColorTransformType(Enum):
 
 
 class ColorRegistry:
-    _default_colors: dict[str, dict[str, _ColorValue]] = {"dark": {}, "light": {}, "hc": {}}
+    _default_colors = {"dark": {}, "light": {}, "hc": {}}
 
-    def __init__(self) -> None:
+    def __init__(self) :
         self._colors = {
             "dark": ColorRegistry._default_colors["dark"].copy(),
             "light": ColorRegistry._default_colors["light"].copy(),
@@ -48,24 +46,24 @@ class ColorRegistry:
         }
 
     @classmethod
-    def _register_default_color(cls, id: str, defaults: Union[dict[str, _ColorValue], None]) -> _ColorIdentifier:
+    def _register_default_color(cls, id, defaults) :
         cls._default_colors["dark"][id] = None if defaults is None else defaults["dark"]
         cls._default_colors["light"][id] = None if defaults is None else defaults["light"]
         cls._default_colors["hc"][id] = None if defaults is None else defaults["hc"]
         return _ColorIdentifier(id)
 
-    def register_color(self, id: str, color: str, theme: str) -> None:
+    def register_color(self, id, color, theme) :
         if self._colors[theme].get(id):
             self._colors[theme][id] = color
 
-    def get_colors(self, theme: str) -> dict[str, Optional[Color]]:
+    def get_colors(self, theme) :
         colors_resolved = {}
         for id, color_value in self._colors[theme].items():
             color_value_resolved = self._resolve_color_value(color_value, theme)
             colors_resolved[id] = color_value_resolved
         return colors_resolved
 
-    def _resolve_color_value(self, color_value: _ColorValue, theme: str) -> Union[Color, None]:
+    def _resolve_color_value(self, color_value, theme) :
         if color_value is None:
             return None
         elif type(color_value) is str:
@@ -79,10 +77,10 @@ class ColorRegistry:
         elif type(color_value) is dict:
             return self._execute_transform(color_value, theme)
 
-    def _is_defines(self, color_id: _ColorIdentifier, theme: str) -> bool:
+    def _is_defines(self, color_id: _ColorIdentifier, theme) :
         return ColorRegistry._default_colors[theme][color_id] != self._colors[theme][color_id]
 
-    def _execute_transform(self, transform: dict, theme: str) -> Union[Color, None]:
+    def _execute_transform(self, transform: dict, theme) :
         if transform["op"] is _ColorTransformType.Darken:
             color_value = self._resolve_color_value(transform["value"], theme)  # type: ignore
             if type(color_value) is Color:
@@ -127,29 +125,29 @@ class ColorRegistry:
 register_color = ColorRegistry._register_default_color
 
 
-def darken(color_value: _ColorValue, factor: float) -> dict:
+def darken(color_value, factor) :
     return {"op": _ColorTransformType.Darken, "value": color_value, "factor": factor}
 
 
-def lighten(color_value: _ColorValue, factor: float) -> dict:
+def lighten(color_value, factor) :
     return {"op": _ColorTransformType.Lighten, "value": color_value, "factor": factor}
 
 
-def transparent(color_value: _ColorValue, factor: float) -> dict:
+def transparent(color_value, factor) :
     return {"op": _ColorTransformType.Transparent, "value": color_value, "factor": factor}
 
 
-def one_of(*color_values: _ColorValue) -> dict:
+def one_of(*color_values) :
     return {"op": _ColorTransformType.OneOf, "values": list(color_values)}
 
 
-def if_defined_then_else(if_arg: _ColorIdentifier, then_arg: _ColorValue, else_arg: _ColorValue) -> dict:
+def if_defined_then_else(if_arg: _ColorIdentifier, then_arg, else_arg) :
     return {"op": _ColorTransformType.IfDefinedThenElse, "if_": if_arg, "then": then_arg, "else_": else_arg}
 
 
 def less_prominent(
-    color_value: _ColorValue, background_color_value: _ColorValue, factor: float, transparency: float
-) -> dict:
+    color_value, background_color_value, factor, transparency
+) :
     return {
         "op": _ColorTransformType.LessProminent,
         "value": color_value,

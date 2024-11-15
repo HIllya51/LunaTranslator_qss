@@ -1,6 +1,5 @@
 import os
 import sys
-from typing import Optional
 
 # Qt6
 _QT_API_PYSIDE6 = "PySide6"
@@ -24,7 +23,7 @@ _ENV_TO_MODULE = {
 }
 
 
-def _get_loaded_api() -> Optional[str]:
+def _get_loaded_api() :
     """Return which API is loaded, if any
     If this returns anything besides None,
     importing any other Qt-binding is unsafe.
@@ -33,19 +32,19 @@ def _get_loaded_api() -> Optional[str]:
     None, 'PySide6', 'PyQt6', 'PyQt5', 'PySide2'
     """
     for api in _API_LIST:
-        if sys.modules.get(f"{api}.QtCore"):
+        if sys.modules.get("{}.QtCore".format(api)):
             return api
     try:
         return _ENV_TO_MODULE[_QT_API_ENV]
     except KeyError:
         raise RuntimeError(
             "The environment variable QT_API has the unrecognized value "
-            f"{_QT_API_ENV!r}; "
-            f"valid values are {[k for k in _ENV_TO_MODULE if k is not None]}"
+            "{!r}; "
+            "valid values are {}".format(_QT_API_ENV, [k for k in _ENV_TO_MODULE if k is not None])
         ) from None
 
 
-def _get_installed_api() -> Optional[str]:
+def _get_installed_api() :
     """Return which API is installed.
 
     Returns

@@ -16,7 +16,6 @@
 
 
 from importlib import resources
-from typing import Type, Union
 
 from qtvscodestyle.base import global_current_colors
 from qtvscodestyle.const import FaBrands, FaRegular, FaSolid, Vsc
@@ -26,19 +25,18 @@ from qtvscodestyle.vscode.color import Color
 from .iconic_font import CharIconEngine
 from .svg import SVGBufferIconEngine
 
-global_icon_engine_map: dict[str, list[Union[SVGBufferIconEngine, CharIconEngine]]] = {}
+global_icon_engine_map  = {}
 
 FONT_FILES = {FaSolid: "fa-solid-900.ttf", FaBrands: "fa-brands-400.ttf", FaRegular: "fa-regular-400.ttf"}
-font_family_cash: dict[Union[Type[FaSolid], Type[FaBrands], Type[FaRegular]], str] = {}
-
-FontIdentifier = Union[FaSolid, FaRegular, FaBrands]
+font_family_cash  = {}
+ 
 
 
 class FontError(Exception):
     """Exception for font errors."""
 
 
-def load_font_family(font_identifier: FontIdentifier) -> str:
+def load_font_family(font_identifier) -> str:
     font_file = FONT_FILES[font_identifier.__class__]
     font_data = resources.read_binary("qtvscodestyle.fonts", font_file)
     id = QFontDatabase.addApplicationFontFromData(font_data)
@@ -48,19 +46,19 @@ def load_font_family(font_identifier: FontIdentifier) -> str:
         with resources.path("qtvscodestyle.fonts", font_file) as font_path:
             pass
         raise FontError(
-            f"Font at '{font_path}' appears to be empty. "
+            "Font at '{}' appears to be empty. "
             "If you are on Windows 10, please read "
             "https://support.microsoft.com/"
             "en-us/kb/3053676 "
             "to know how to prevent Windows from blocking "
-            "the fonts that come with QtAwesome."
+            "the fonts that come with QtAwesome.".format(font_path)
         )
 
     font_family_cash[font_identifier.__class__] = font_families[0]
     return font_families[0]
 
 
-def _iconic_icon_engine(icon_id: FontIdentifier, color: Color) -> CharIconEngine:
+def _iconic_icon_engine(icon_id, color) -> CharIconEngine:
     font_family = font_family_cash.get(icon_id.__class__)
     if font_family is None:
         font_family = load_font_family(icon_id)
@@ -73,13 +71,13 @@ def _iconic_icon_engine(icon_id: FontIdentifier, color: Color) -> CharIconEngine
     return CharIconEngine(font, char, color)
 
 
-def _vs_icon_engine(icon_id: Vsc, color: Color) -> SVGBufferIconEngine:
+def _vs_icon_engine(icon_id, color) -> SVGBufferIconEngine:
     xml = resources.read_text("qtvscodestyle.vscode.icons", icon_id.value)
     return SVGBufferIconEngine(xml, color)
 
 
 def _icon(
-    icon_id: Union[Vsc, FaSolid, FaRegular, FaBrands], color_id: str = None, color: Color = Color.white()
+    icon_id , color_id = None, color = Color.white()
 ) -> QIcon:
     if color_id is not None:
         current_color = global_current_colors.get(color_id)
@@ -95,7 +93,7 @@ def _icon(
     elif type(icon_id) is FaBrands:
         engine = _iconic_icon_engine(icon_id, color)
     else:
-        raise TypeError(f"icon_id argument must be a Vs, FaSolid, FaRegular, FaBrands, not {type(icon_id)}")
+        raise TypeError("icon_id argument must be a Vs, FaSolid, FaRegular, FaBrands, not {}".format(type(icon_id)))
 
     # Register icon
     if color_id is not None:
@@ -105,10 +103,10 @@ def _icon(
     return QIcon(engine)
 
 
-def theme_icon(icon_id: Union[Vsc, FaSolid, FaRegular, FaBrands], color_id: str = "icon.foreground") -> QIcon:
+def theme_icon(icon_id, color_id = "icon.foreground") -> QIcon:
     return _icon(icon_id, color_id)
 
 
-def icon(icon_id: Union[Vsc, FaSolid, FaRegular, FaBrands], color_code: str = "#FFFFFF") -> QIcon:
+def icon(icon_id, color_code = "#FFFFFF") -> QIcon:
     color = Color.from_hex(color_code)
     return _icon(icon_id, color=color)
