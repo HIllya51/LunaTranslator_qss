@@ -13,7 +13,7 @@
 # (see NOTICE.md in the QtVSCodeStyle root directory for details)
 # ============================================================================
 
-from __future__ import annotations
+
 
 from importlib import resources
 from typing import Type, Union

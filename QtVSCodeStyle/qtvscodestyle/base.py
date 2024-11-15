@@ -1,4 +1,4 @@
-from __future__ import annotations
+
 
 import json
 import re
@@ -105,8 +105,9 @@ def _load_stylesheet(
         theme_property = theme
     else:
         raise TypeError("Invalid type input to theme argument. ")
-
-    colors = {**theme_property["colors"], **custom_colors}
+    colors={}
+    colors.update(theme_property["colors"])
+    colors.update(custom_colors)
     colors = _merge_colors_to_default(colors, theme_property["type"])
     global_current_colors.clear()
     global_current_colors.update(colors)
@@ -147,11 +148,7 @@ def _beautify_printing_dict(di: dict, key_title: str, value_title: str) -> None:
     max_len = 0
     for key in di.keys():
         max_len = max(len(key), max_len)
-    print(f"{key_title} ".ljust(max_len) + f"  {value_title}")
-    print(("_" * len(key_title) + "_").ljust(max_len, " ") + "  " + ("_" * len(value_title) + "_"))
-    print()
-    for key, value in di.items():
-        print(key.ljust(max_len) + f": {value}")
+      
 
 
 def list_themes():

@@ -63,14 +63,14 @@ def _make_binop(op: str) -> t.Callable[["CodeGenerator", nodes.BinExpr, "Frame"]
             self.environment.sandboxed
             and op in self.environment.intercepted_binops  # type: ignore
         ):
-            self.write(f"environment.call_binop(context, {op!r}, ")
+            self.write("environment.call_binop(context, {!r}, ".format(op))
             self.visit(node.left, frame)
             self.write(", ")
             self.visit(node.right, frame)
         else:
             self.write("(")
             self.visit(node.left, frame)
-            self.write(f" {op} ")
+            self.write(" {} ".format(op))
             self.visit(node.right, frame)
 
         self.write(")")
@@ -87,7 +87,7 @@ def _make_unop(
             self.environment.sandboxed
             and op in self.environment.intercepted_unops  # type: ignore
         ):
-            self.write(f"environment.call_unop(context, {op!r}, ")
+            self.write("environment.call_unop(context, {!r}, ".format(op))
             self.visit(node.node, frame)
         else:
             self.write("(" + op)
@@ -384,12 +384,12 @@ class CodeGenerator(NodeVisitor):
     def temporary_identifier(self) -> str:
         """Get a new unique identifier."""
         self._last_identifier += 1
-        return f"t_{self._last_identifier}"
+        return "t_{}".format(self._last_identifier)
 
     def buffer(self, frame: Frame) -> None:
         """Enable buffering for the frame from that point onwards."""
         frame.buffer = self.temporary_identifier()
-        self.writeline(f"{frame.buffer} = []")
+        self.writeline("{} = []".format(frame.buffer))
 
     def return_buffer_contents(
         self, frame: Frame, force_unescaped: bool = False
@@ -399,17 +399,17 @@ class CodeGenerator(NodeVisitor):
             if frame.eval_ctx.volatile:
                 self.writeline("if context.eval_ctx.autoescape:")
                 self.indent()
-                self.writeline(f"return Markup(concat({frame.buffer}))")
+                self.writeline("return Markup(concat({}))".format(frame.buffer))
                 self.outdent()
                 self.writeline("else:")
                 self.indent()
-                self.writeline(f"return concat({frame.buffer})")
+                self.writeline("return concat({})".format(frame.buffer))
                 self.outdent()
                 return
             elif frame.eval_ctx.autoescape:
-                self.writeline(f"return Markup(concat({frame.buffer}))")
+                self.writeline("return Markup(concat({}))".format(frame.buffer))
                 return
-        self.writeline(f"return concat({frame.buffer})")
+        self.writeline("return concat({})".format(frame.buffer))
 
     def indent(self) -> None:
         """Indent by one."""

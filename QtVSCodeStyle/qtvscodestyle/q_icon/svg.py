@@ -15,7 +15,7 @@
 """
 A Class for generating QIcons from SVGs with arbitrary colors at runtime.
 """
-from __future__ import annotations
+
 
 from qtvscodestyle.qtpy.QtCore import QPoint, QRect, QRectF, QSize, Qt
 from qtvscodestyle.qtpy.QtGui import QIcon, QIconEngine, QImage, QPainter, QPixmap

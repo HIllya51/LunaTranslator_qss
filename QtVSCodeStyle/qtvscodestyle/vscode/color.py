@@ -14,7 +14,7 @@
 # ============================================================================
 
 
-from __future__ import annotations
+
 
 import colorsys
 from functools import lru_cache
@@ -99,7 +99,7 @@ class HSVA:
         self._a = max(min(1, a), 0)
 
     def __str__(self) -> str:
-        return f"hsla({self.h:.3f}, {self.s:.3%}, {self.v:.3%}, {self.a:.3f})"
+        return "hsla({:.3f}, {:.3%}, {:.3%}, {:.3f})".format(self.h, self.s, self.v, self.a)
 
     @property
     def h(self) -> float:

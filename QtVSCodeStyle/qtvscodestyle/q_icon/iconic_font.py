@@ -13,7 +13,7 @@
 # (see NOTICE.md in the QtVSCodeStyle root directory for details)
 # ============================================================================
 
-from __future__ import annotations
+
 
 from qtvscodestyle.qtpy.QtCore import QPoint, QRect, QSize, Qt
 from qtvscodestyle.qtpy.QtGui import QColor, QFont, QIcon, QIconEngine, QPainter, QPixmap

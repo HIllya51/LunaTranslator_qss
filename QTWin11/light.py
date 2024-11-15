@@ -1,19 +1,27 @@
 from winreg import *
 from . import stylelight_rc
 
+from myutils.config import get_platform
+
+
 def stylesheet():
+    if get_platform() == "xp":
+        return ""
     try:
-        registry = ConnectRegistry(None,HKEY_CURRENT_USER)
-        key = OpenKey(registry, r'SOFTWARE\\Microsoft\Windows\\CurrentVersion\\Explorer\\Accent')
-        key_value = QueryValueEx(key,'AccentColorMenu')
+        registry = ConnectRegistry(None, HKEY_CURRENT_USER)
+        key = OpenKey(
+            registry, r"SOFTWARE\\Microsoft\Windows\\CurrentVersion\\Explorer\\Accent"
+        )
+        key_value = QueryValueEx(key, "AccentColorMenu")
         accent_int = key_value[0]
     except:
-        accent_int=0xffd47800
-    accent = accent_int-4278190080
-    accent = str(hex(accent)).split('x')[1]
-    accent = accent[4:6]+accent[2:4]+accent[0:2]
-    accent = 'rgb'+str(tuple(int(accent[i:i+2], 16) for i in (0, 2, 4)))
-    return ('''/*BACKGROUND*/
+        accent_int = 0xFFD47800
+    accent = accent_int - 4278190080
+    accent = str(hex(accent)).split("x")[1]
+    accent = accent[4:6] + accent[2:4] + accent[0:2]
+    accent = "rgb" + str(tuple(int(accent[i : i + 2], 16) for i in (0, 2, 4)))
+    return (
+        """/*BACKGROUND*/
 QWidget {
     background: transparent;
     color: rgb(0, 0, 0);
@@ -137,8 +145,12 @@ QRadioButton::indicator:pressed {
 }
 
 QRadioButton::indicator:checked {
-    background-color: '''+accent+''';
-    border: 2px solid '''+accent+''';
+    background-color: """
+        + accent
+        + """;
+    border: 2px solid """
+        + accent
+        + """;
     image: url(:/RadioButton/img light/RadioButton.png);
     color: rgb(255, 255, 255);
 }
@@ -185,8 +197,12 @@ QCheckBox::indicator:pressed {
 }
 
 QCheckBox::indicator:checked {
-    background-color: '''+accent+''';
-    border: 2px solid '''+accent+''';
+    background-color: """
+        + accent
+        + """;
+    border: 2px solid """
+        + accent
+        + """;
     image: url(:/CheckBox/img light/CheckBox.png);
     color: rgb(255, 255, 255);
 }
@@ -286,7 +302,9 @@ QSpinBox::focus {
     background-color: rgba(0, 0, 0, 5);
     border: 1px solid rgba(0, 0, 0, 10);
     color: rgba(0, 0, 0, 200);
-    border-bottom: 2px solid '''+accent+''';
+    border-bottom: 2px solid """
+        + accent
+        + """;
 }
 
 QSpinBox::up-button {
@@ -372,7 +390,9 @@ QDoubleSpinBox::focus {
     background-color: rgba(0, 0, 0, 5);
     border: 1px solid rgba(0, 0, 0, 10);
     color: rgba(0, 0, 0, 200);
-    border-bottom: 2px solid '''+accent+''';
+    border-bottom: 2px solid """
+        + accent
+        + """;
 }
 
 QDoubleSpinBox::up-button {
@@ -458,7 +478,9 @@ QDateTimeEdit::focus {
     background-color: rgba(0, 0, 0, 5);
     border: 1px solid rgba(0, 0, 0, 10);
     color: rgba(0, 0, 0, 200);
-    border-bottom: 2px solid '''+accent+''';
+    border-bottom: 2px solid """
+        + accent
+        + """;
 }
 
 QDateTimeEdit::up-button {
@@ -535,7 +557,9 @@ QSlider::groove:vertical {
 }
 
 QSlider::handle:vertical {
-    background-color: '''+accent+''';
+    background-color: """
+        + accent
+        + """;
     border: 6px solid #dbdbdb;
     height: 13px;
     min-width: 15px;
@@ -544,7 +568,9 @@ QSlider::handle:vertical {
 }
 
 QSlider::handle:vertical:hover {
-    background-color: '''+accent+''';
+    background-color: """
+        + accent
+        + """;
     border: 4px solid #dbdbdb;
     height: 17px;
     min-width: 15px;
@@ -553,7 +579,9 @@ QSlider::handle:vertical:hover {
 }
 
 QSlider::handle:vertical:pressed {
-    background-color: '''+accent+''';
+    background-color: """
+        + accent
+        + """;
     border: 7px solid #dbdbdb;
     height: 11px;
     min-width: 15px;
@@ -583,7 +611,9 @@ QSlider::groove:horizontal {
 }
 
 QSlider::handle:horizontal {
-    background-color: '''+accent+''';
+    background-color: """
+        + accent
+        + """;
     border: 6px solid #dbdbdb;
     width: 13px;
     min-height: 15px;
@@ -592,7 +622,9 @@ QSlider::handle:horizontal {
 }
 
 QSlider::handle:horizontal:hover {
-    background-color: '''+accent+''';
+    background-color: """
+        + accent
+        + """;
     border: 4px solid #dbdbdb;
     width: 17px;
     min-height: 15px;
@@ -601,7 +633,9 @@ QSlider::handle:horizontal:hover {
 }
 
 QSlider::handle:horizontal:pressed {
-    background-color: '''+accent+''';
+    background-color: """
+        + accent
+        + """;
     border: 7px solid #dbdbdb;
     width: 11px;
     min-height: 15px;
@@ -627,7 +661,9 @@ QProgressBar {
 }
 
 QProgressBar::chunk {
-    background-color: '''+accent+''';
+    background-color: """
+        + accent
+        + """;
     border-radius: 2px;
 }
 
@@ -689,7 +725,9 @@ QLineEdit:hover {
 }
 
 QLineEdit:focus {
-    border-bottom: 2px solid '''+accent+''';
+    border-bottom: 2px solid """
+        + accent
+        + """;
     background-color: rgba(0, 0, 0, 5);
     border-top: 1px solid rgba(0, 0, 0, 13);
     border-left: 1px solid rgba(0, 0, 0, 13);
@@ -823,7 +861,9 @@ QTextEdit:focus {
     border-top: 1px solid rgba(0, 0, 0, 13);
     border-left: 1px solid rgba(0, 0, 0, 13);
     border-right: 1px solid rgba(0, 0, 0, 13);
-    border-bottom: 2px solid '''+accent+''';
+    border-bottom: 2px solid """
+        + accent
+        + """;
 }
 
 QTextEdit:disabled {
@@ -854,7 +894,9 @@ QPlainTextEdit:focus {
     border-top: 1px solid rgba(0, 0, 0, 13);
     border-left: 1px solid rgba(0, 0, 0, 13);
     border-right: 1px solid rgba(0, 0, 0, 13);
-    border-bottom: 2px solid '''+accent+''';
+    border-bottom: 2px solid """
+        + accent
+        + """;
 }
 
 QPlainTextEdit:disabled {
@@ -936,7 +978,9 @@ QCalendarWidget QSpinBox::focus {
     background-color: rgba(0, 0, 0, 5);
     border: 1px solid rgba(0, 0, 0, 10);
     color: rgba(0, 0, 0, 200);
-    border-bottom: 2px solid '''+accent+''';
+    border-bottom: 2px solid """
+        + accent
+        + """;
 }
 
 QCalendarWidget QSpinBox::up-button {
@@ -987,7 +1031,9 @@ QCalendarWidget QWidget {
 
 QCalendarWidget QAbstractItemView:enabled {
     color: rgb(0, 0, 0);  
-    selection-background-color: '''+accent+''';
+    selection-background-color: """
+        + accent
+        + """;
     selection-color: black;
     border: 1px solid rgba(0, 0, 0, 10);
     border-top-left-radius: 0px;
@@ -1096,8 +1142,12 @@ QTreeView:disabled {
 }
 
 #toggleSwitch::indicator:checked {
-    background-color: '''+accent+''';
-    border: 2px solid '''+accent+''';
+    background-color: """
+        + accent
+        + """;
+    border: 2px solid """
+        + accent
+        + """;
     image: url(:/ToggleSwitch/img light/ToggleSwitchOn.png);
     color: rgb(255, 255, 255);
     padding-left: 25px;
@@ -1105,12 +1155,16 @@ QTreeView:disabled {
 }
 
 #toggleSwitch::indicator:checked:hover {
-    background-color: '''+accent+''';
+    background-color: """
+        + accent
+        + """;
     image: url(:/ToggleSwitch/img light/ToggleSwitchOnHover.png);
 }
 
 #toggleSwitch::indicator:checked:pressed {
-    background-color: '''+accent+''';
+    background-color: """
+        + accent
+        + """;
     width: 26px;
     padding-left: 21px;
     image: url(:/ToggleSwitch/img light/ToggleSwitchOnPressed.png);
@@ -1127,7 +1181,9 @@ QTreeView:disabled {
 
 /*HYPERLINKBUTTON*/
 #hyperlinkButton {
-    color: '''+accent+''';
+    color: """
+        + accent
+        + """;
     font-size: 17px;
     
     border-radius: 5px;
@@ -1141,7 +1197,9 @@ QTreeView:disabled {
 
 #hyperlinkButton::pressed {
     background-color: rgba(0, 0, 0, 7);
-    color: '''+accent+''';
+    color: """
+        + accent
+        + """;
 }
 
 #hyperlinkButton:disabled {
@@ -1168,4 +1226,5 @@ QListView::item:selected {
     color: black;
     border-radius: 5px;
     padding-left: 0px;
-}''')
+}"""
+    )
