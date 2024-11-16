@@ -31,14 +31,8 @@ def _parse_env_patch(stylesheet):
         qt_version = "10.0.0"  # Fairly future version for always setting latest version.
 
     # greater_equal and less_equal must be evaluated before greater and less.
-    operators = OrderedDict({
-        "==": operator.eq,  # equal
-        "!=": operator.ne,  # unequal
-        ">=": operator.ge,  # greater_equal
-        "<=": operator.le,  # less_equal
-        ">": operator.gt,  # greater
-        "<": operator.lt,  # less
-    })
+    operators = OrderedDict([("==", operator.eq),( "!=", operator.ne),(">=", operator.ge),( "<=", operator.le),( ">", operator.gt),( "<", operator.lt)])
+
     replacements = {}
 
     for match in re.finditer(r"\$env_patch\{[\s\S]*?\}", stylesheet):

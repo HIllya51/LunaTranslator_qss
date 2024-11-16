@@ -9,7 +9,7 @@ from collections import OrderedDict
 import qdarktheme
 
 # greater_equal and less_equal must be evaluated before greater and less.
-_OPERATORS = OrderedDict({"==": ope.eq, "!=": ope.ne, ">=": ope.ge, "<=": ope.le, ">": ope.gt, "<": ope.lt})
+_OPERATORS = OrderedDict([("==", ope.eq),( "!=", ope.ne),(">=", ope.ge),( "<=", ope.le),( ">", ope.gt),( "<", ope.lt)])
 
 
 def multi_replace(target, replacements) -> str:
