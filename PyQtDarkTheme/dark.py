@@ -1,7 +1,7 @@
 import os
 import sys
 import json
-
+from collections import OrderedDict
 sys.path.append(os.path.dirname(__file__))
 import qdarktheme
 from gui.inputdialog import autoinitdialog
@@ -17,8 +17,8 @@ def tryloadconfig():
         return {}
 
 
-ACCENT_COLORS = {
-    "dark": {
+ACCENT_COLORS = OrderedDict({
+    "dark": OrderedDict({
         "blue": "#8ab4f7",
         "graphite": "#898a8f",
         "green": "#4caf50",
@@ -27,8 +27,8 @@ ACCENT_COLORS = {
         "purple": "#af52bf",
         "red": "#f6685e",
         "yellow": "#ffeb3b",
-    },
-    "light": {
+    }),
+    "light": OrderedDict({
         "blue": "#1a73e8",
         "graphite": "#898a8f",
         "green": "#4caf50",
@@ -37,8 +37,8 @@ ACCENT_COLORS = {
         "purple": "#9c27b0",
         "red": "#f44336",
         "yellow": "#f4c65f",
-    },
-}
+    }),
+})
 
 
 

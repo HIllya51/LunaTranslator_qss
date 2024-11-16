@@ -71,13 +71,7 @@ def url(color: Color, id, rotate: int = 0) -> str:
     if svg_path.exists():
         return url
     svg = Svg(id).colored(color).rotate(rotate)
-    try:
-        svg_path.write_text(str(svg))
-    except:
-        import os
-        os.makedirs(os.path.dirname(str(svg_path)), exist_ok=True)
-        with open(str(svg_path), 'w') as ff:
-            ff.write(str(svg))
+    svg_path.write_text(str(svg))
     return url
 
 
