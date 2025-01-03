@@ -8,7 +8,7 @@ from qt_material import build_stylesheet
 
 def tryloadconfig():
     try:
-        with open(__file__ + ".json", "r", encoding="utf8") as ff:
+        with open("userconfig/qt_material.json", "r", encoding="utf8") as ff:
             return json.loads(ff.read())
     except:
         return {}
@@ -19,7 +19,7 @@ def get_setting_window(parent, callback):
     config = tryloadconfig()
 
     def callback1():
-        with open(__file__ + ".json", "w", encoding="utf8") as ff:
+        with open("userconfig/qt_material.json", "w", encoding="utf8") as ff:
             ff.write(json.dumps(config))
         callback()
 
