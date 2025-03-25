@@ -80,8 +80,8 @@ def get_setting_window(parent, callback):
 
 def stylesheet():
     config = tryloadconfig()
-    corner_shape = config.get("corner_shape", 0)
-    color = config.get("color", 0)
+    corner_shape = config.get("corner_shape", 1)
+    color = config.get("color", 4)
     return qdarktheme.load_stylesheet(
         theme=theme,
         corner_shape=["rounded", "sharp"][corner_shape],
