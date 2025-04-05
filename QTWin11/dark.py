@@ -1217,10 +1217,11 @@ QListView {
     outline: 0;
 }
 
+/*
 QListView::item {
     height: 35px;
 }
-
+*/
 QListView::item:selected {
     background-color: rgba(255, 255, 255, 13);
     color: white;
