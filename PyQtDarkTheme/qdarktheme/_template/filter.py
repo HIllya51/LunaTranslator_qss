@@ -12,7 +12,9 @@ from qdarktheme.qtpy.qt_compat import QT_API
 _logger = get_logger(__name__)
 
 if qt_version is None:
-    _logger.warning("Failed to detect Qt version. Load Qt version as the latest version.")
+    _logger.warning(
+        "Failed to detect Qt version. Load Qt version as the latest version."
+    )
     _QT_VERSION = "10.0.0"  # Fairly future version for always setting latest version.
 else:
     _QT_VERSION = qt_version
@@ -40,7 +42,7 @@ def _transform(color, color_state) -> Color:
     return color
 
 
-def color(color_info, state = None) -> Color:
+def color(color_info, state=None) -> Color:
     """Filter for template engine. This filter convert color info data to color object."""
     if isinstance(color_info, str):
         return Color.from_hex(color_info)
@@ -52,7 +54,11 @@ def color(color_info, state = None) -> Color:
         return color
 
     transforms = color_info[state]
-    return Color.from_hex(transforms) if isinstance(transforms, str) else _transform(color, transforms)
+    return (
+        Color.from_hex(transforms)
+        if isinstance(transforms, str)
+        else _transform(color, transforms)
+    )
 
 
 def palette_format(color: Color) -> str:
@@ -66,18 +72,19 @@ def palette_format(color: Color) -> str:
 
 def url(color: Color, id, rotate: int = 0) -> str:
     """Filter for template engine. This filter create url for svg and output svg file."""
-    svg_path = get_cash_root_path(__version__) / "{}_{}_{}.svg".format(id, color._to_hex(), rotate)
+    svg_path = get_cash_root_path(__version__) / "{}_{}_{}.svg".format(
+        id, color._to_hex(), rotate
+    )
     url = "url({})".format(svg_path.as_posix())
     if svg_path.exists():
         return url
     svg = Svg(id).colored(color).rotate(rotate)
-    svg_path.write_text(str(svg))
+    with open(str(svg_path), "w") as ff:
+        ff.write(str(svg))
     return url
 
 
-def env(
-    text, value, version = None, qt = None, os = None
-) -> str:
+def env(text, value, version=None, qt=None, os=None) -> str:
     """Filter for template engine. This filter output empty string when unexpected environment."""
     if version and not analyze_version_str(_QT_VERSION, version):
         return ""
