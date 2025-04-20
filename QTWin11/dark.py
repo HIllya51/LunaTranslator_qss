@@ -1,11 +1,8 @@
 from winreg import *
 from . import styledark_rc
-from myutils.config import get_platform
 
 
 def stylesheet():
-    if get_platform() == "xp":
-        return ""
     try:
         registry = ConnectRegistry(None, HKEY_CURRENT_USER)
         key = OpenKey(
